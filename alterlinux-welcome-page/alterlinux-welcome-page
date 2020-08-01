@@ -56,7 +56,7 @@ _msg_error() {
 # Argument analysis and processing
 options="${@}"
 _opt_short="b:u:lh"
-_opt_long="browser:,url:,live,help,alterlive"
+_opt_long="browser:,url:,live,help,alterlive,aobuta"
 OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
 if [[ ${?} != 0 ]]; then
     exit 1
@@ -86,6 +86,10 @@ while true; do
             _help
             shift 1
             exit 0
+            ;;
+        --aobuta)
+            url="https://ao-buta.com/"
+            shift 1
             ;;
         --alterlive)
             alterlive=true
@@ -123,7 +127,7 @@ if [[ "${custombrowser}" = false ]]; then
     done
 fi
 
-$(printf "${browser}" "${url}")
+eval $(printf "${browser}" "${url}") &
 
 if [[ "${alterlive}" = true ]]; then
     remove ~/.config/autostart/welcome_page.desktop
