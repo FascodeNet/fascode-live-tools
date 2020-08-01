@@ -87,8 +87,8 @@ init() {
 
 # Argument analysis and processing
 options="${@}"
-_opt_short="fh"
-_opt_long="force,help,alterlive"
+_opt_short="fht"
+_opt_long="force,help,alterlive,t-mart"
 OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
 if [[ ${?} != 0 ]]; then
     exit 1
@@ -114,6 +114,11 @@ while true; do
         --alterlive)
             alterlive=true
             shift 1
+            ;;
+        -t | --t-mart)
+            echo "さすが店長、青春ブタ野郎だね"
+            shift 1
+            exit 0
             ;;
         --)
             shift
