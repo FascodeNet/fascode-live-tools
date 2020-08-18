@@ -45,6 +45,7 @@ _help() {
     echo "    -l | --live           Opens the page only in a live environment."
     echo "                          Whether it is a live environment or not is determined"
     echo "                          by the presence or absence of the installer."
+    echo "    --alterlive           Delete the startup file for the live environment."
     echo "    -h | --help           This help message and exit."
     echo
     echo "%s is replaces with the URL"
