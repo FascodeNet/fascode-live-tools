@@ -13,6 +13,7 @@ alterlive=false
 url="https://fascode.net/projects/linux/alter/alter-welcome.php"
 browser="chromium --start-maximized --app=%s"
 custombrowser=false
+nourlmode=false
 
 defaultbrowserlist=(
     "vivaldi-stable --start-maximized --app=%s"
@@ -63,6 +64,9 @@ _msg_error() {
     echo "${@}" >&2
 }
 
+_msg_warn() {
+    echo "${@}" >&2
+}
 
 # Argument analysis and processing
 options="${@}"
@@ -124,6 +128,7 @@ if [[ "${checklive}" = true ]]; then
     fi
 fi
 
+# ブラウザが指定されていないなら一覧から自動で検出する
 if [[ "${custombrowser}" = false ]]; then
     defaultbrowserlist+=("END_OF_LIST")
     for ((_browser_count = 0; _browser_count < ${#defaultbrowserlist[@]}; _browser_count++)); do
@@ -136,9 +141,17 @@ if [[ "${custombrowser}" = false ]]; then
             exit 1
         fi
     done
+elif [[ -z "$(echo "${browser}" | grep "%s")" ]]; then
+    # -bで%sが指定されていないならコマンドの後にURLを付ける
+    nourlmode=true
 fi
 
-eval $(printf "${browser}" "${url}") &
+if [[ "${nourlmode}" = true ]]; then
+    _msg_warn "Directly executed with URL as an argument because %s was not specified."
+    eval ${browser} ${url} &
+else
+    eval $(printf "${browser}" "${url}") &
+fi
 
 if [[ "${alterlive}" = true ]]; then
     remove ~/.config/autostart/welcome_page.desktop
