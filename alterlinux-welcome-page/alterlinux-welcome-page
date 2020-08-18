@@ -15,6 +15,9 @@ browser="chromium --start-maximized --app=%s"
 custombrowser=false
 
 defaultbrowserlist=(
+    "vivaldi-stable --start-maximized --app=%s"
+    "brave --start-maximized --app=%s"
+    "firefox-developer-edition %s"
     "firefox %s"
     "chromium --start-maximized --app=%s"
     "google-chrome  --start-maximized --app=%s"
