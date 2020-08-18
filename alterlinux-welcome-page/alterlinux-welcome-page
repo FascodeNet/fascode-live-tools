@@ -40,12 +40,19 @@ _help() {
     echo " General options:"
     echo "    -b | --browser <cmd>  Specify the browser command."
     echo "                          %s will be replaced with the URL"
-    echo "                          Default: ${browser}"
     echo "    -u | --url <url>      Set the URL."
     echo "                          Default: ${url}"
-    echo
     echo "    -l | --live           Opens the page only in a live environment."
+    echo "                          Whether it is a live environment or not is determined"
+    echo "                          by the presence or absence of the installer."
     echo "    -h | --help           This help message and exit."
+    echo
+    echo "%s is replaces with the URL"
+    echo " Browser list:"
+    local _browser _browser_count
+    for ((_browser_count = 0; _browser_count < ${#defaultbrowserlist[@]}; _browser_count++)); do
+        echo "    ${defaultbrowserlist[${_browser_count}]}"
+    done
 }
 
 _msg_error() {
