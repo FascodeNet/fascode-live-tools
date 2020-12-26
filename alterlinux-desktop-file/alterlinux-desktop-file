@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# Yamada Hayao
+# Twitter: @Hayao0819
+# Email  : hayao@fascode.net
+#
+# (c) 2019-2020 Fascode Network.
+#
+
+set -e
+
+alterlive=false
+
+_help() {
+    echo "usage ${0} [options]"
+    echo
+    echo " General options:"
+    echo "    -f | --force        Force overwriting."
+    echo "    -h | --help         This help message and exit."
+    echo
+    echo "         --alterlive    Remove the file for live session"
+}
+
+# Argument analysis and processing
+options="${@}"
+_opt_short="h"
+_opt_long="help,alterlive"
+OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
+if [[ ${?} != 0 ]]; then
+    exit 1
+fi
+
+eval set -- "${OPT}"
+unset OPT
+unset _opt_short
+unset _opt_long
+
+while true; do
+    case ${1} in
+        -h | --help)
+            _help
+            shift 1
+            exit 0
+            ;;
+        --alterlive)
+            alterlive=true
+            shift 1
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "Invalid argument '${1}'" >&2
+            _help
+            exit 1
+            ;;
+    esac
+done
+
+
+# ~/Desktopに相当するディレクトリを返します
+get_desktop_dir() {
+    local _user_config_dir _desktop_dir
+    if [[ -v XDG_CONFIG_HOME ]]; then
+        _user_config_dir="${XDG_CONFIG_HOME}"
+    else
+        _use_config_dir="${HOME}/.config"
+    fi
+    if [[ -f "${_use_config_dir}/user-dirs.dirs" ]]; then
+        source "${_use_config_dir}/user-dirs.dirs"
+    fi
+    if [[ -v XDG_DESKTOP_DIR ]]; then
+        _desktop_dir="${XDG_DESKTOP_DIR}"
+    else
+        _desktop_dir="${HOME}/Desktop"
+    fi
+    echo -n "${_desktop_dir}"
+}
+
+desktop_dir="$(get_desktop_dir)"
+
+
+# calamaresのアイコン
+calamares="/usr/share/alterlinux/desktop-file/calamares.desktop"
+cp "${calamares}" "${desktop_dir}"
+os_name="$(
+    if [[ -f "/etc/os-release" ]]; then
+        source "/etc/os-release"
+        echo -n "${NAME}"
+    else
+        echo -n "Alter Linux"
+    fi
+)"
+sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_dir}/$(basename "${calamares}")"
+
+
+if [[ "${alterlive}" = true ]]; then
+    remove ~/.config/autostart/genicon.desktop
+fi
