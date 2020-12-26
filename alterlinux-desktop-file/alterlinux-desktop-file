@@ -82,6 +82,10 @@ desktop_dir="$(get_desktop_dir)"
 
 # calamaresのアイコン
 calamares="/usr/share/alterlinux/desktop-file/calamares.desktop"
+if [[ ! -f "${calamares}" ]]; then
+    echo "${calamares} was not found"
+    exit 1
+fi
 cp "${calamares}" "${desktop_dir}"
 os_name="$(
     if [[ -f "/etc/os-release" ]]; then
