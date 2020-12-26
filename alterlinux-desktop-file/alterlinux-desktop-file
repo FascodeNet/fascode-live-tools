@@ -9,6 +9,8 @@
 set -e
 
 alterlive=false
+force=false
+checklive=false
 
 _help() {
     echo "usage ${0} [options]"
@@ -16,14 +18,17 @@ _help() {
     echo " General options:"
     echo "    -f | --force        Force overwriting."
     echo "    -h | --help         This help message and exit."
+    echo "    -l | --live         Opens the page only in a live environment."
+    echo "                        Whether it is a live environment or not is determined"
+    echo "                        by the presence or absence of the installer."
     echo
     echo "         --alterlive    Remove the file for live session"
 }
 
 # Argument analysis and processing
 options="${@}"
-_opt_short="h"
-_opt_long="help,alterlive"
+_opt_short="fhl"
+_opt_long="force,live,help,alterlive"
 OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
 if [[ ${?} != 0 ]]; then
     exit 1
@@ -36,6 +41,14 @@ unset _opt_long
 
 while true; do
     case ${1} in
+        -f | --force)
+            force=true
+            shift 1
+            ;;
+        -l | --live)
+            checklive=true
+            shift 1
+            ;;
         -h | --help)
             _help
             shift 1
@@ -58,6 +71,13 @@ while true; do
 done
 
 
+if [[ "${checklive}" = true ]]; then
+    if ! pacman -Qq alterlinux-calamares 1> /dev/null 2> /dev/null; then
+        exit 0
+    fi
+fi
+
+
 # ~/Desktopに相当するディレクトリを返します
 get_desktop_dir() {
     local _user_config_dir _desktop_dir
@@ -77,13 +97,32 @@ get_desktop_dir() {
     echo -n "${_desktop_dir}"
 }
 
-desktop_dir="$(get_desktop_dir)"
+remove () {
+    local _list
+    local _file
+    _list=($(echo "$@"))
+    for _file in "${_list[@]}"; do
+        if [[ -f ${_file} ]]; then
+            rm -f "${_file}"
+        elif [[ -d ${_file} ]]; then
+            rm -rf "${_file}"
+        fi
+    done
+}
 
+desktop_dir="$(get_desktop_dir)"
 
 # calamaresのアイコン
 calamares="/usr/share/alterlinux/desktop-file/calamares.desktop"
+desktop_icon="${desktop_dir}/$(basename "${calamares}")"
+
 if [[ ! -f "${calamares}" ]]; then
-    echo "${calamares} was not found"
+    echo "${calamares} was not found" >&2
+    exit 1
+fi
+
+if [[ -f "${desktop_icon}" ]] && [[ "${force}" = false ]]; then
+    echo "File already exists" >&2
     exit 1
 fi
 cp "${calamares}" "${desktop_dir}"
@@ -95,7 +134,7 @@ os_name="$(
         echo -n "Alter Linux"
     fi
 )"
-sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_dir}/$(basename "${calamares}")"
+sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_icon}"
 
 
 if [[ "${alterlive}" = true ]]; then
