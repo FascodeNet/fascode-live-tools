@@ -137,7 +137,7 @@ mode="${1}"
 case "${1}" in
     add) 
         shift 1
-        if [[ -z "${@}" ]]; then
+        if [[ -z "${*}" ]]; then
             _msg_error "Please specify a directory."
             exit 1
         else
