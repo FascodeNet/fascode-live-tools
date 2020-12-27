@@ -110,22 +110,26 @@ remove () {
     done
 }
 
+#copy <コピー元> <コピー先>
+copy() {
+    if [[ ! -f "${1}" ]]; then
+        echo "${1} was not found" >&2
+        exit 1
+    fi
+    if [[ -f "${2}/$(basename "${1}")" ]] || [[ -f "${2}" ]] && [[ "${force}" = false ]]; then
+        echo "File already exists" >&2
+        exit 1
+    fi
+
+    cp "${1}" "${2}"
+}
+
 desktop_dir="$(get_desktop_dir)"
 
 # calamaresのアイコン
-calamares="/usr/share/alterlinux/desktop-file/calamares.desktop"
-desktop_icon="${desktop_dir}/$(basename "${calamares}")"
-
-if [[ ! -f "${calamares}" ]]; then
-    echo "${calamares} was not found" >&2
-    exit 1
-fi
-
-if [[ -f "${desktop_icon}" ]] && [[ "${force}" = false ]]; then
-    echo "File already exists" >&2
-    exit 1
-fi
-cp "${calamares}" "${desktop_dir}"
+source_file="/usr/share/alterlinux/desktop-file/calamares.desktop"
+desktop_icon="${desktop_dir}/$(basename "${source_file}")"
+copy "${source_file}" "${desktop_dir}"
 os_name="$(
     if [[ -f "/etc/os-release" ]]; then
         source "/etc/os-release"
@@ -135,6 +139,12 @@ os_name="$(
     fi
 )"
 sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_icon}"
+
+
+# welcome-page
+source_file="/usr/share/alterlinux/desktop-file/welcome-to-alter.desktop"
+desktop_icon="${desktop_dir}/$(basename "${source_file}")"
+copy "${source_file}" "${desktop_dir}"
 
 
 if [[ "${alterlive}" = true ]]; then
