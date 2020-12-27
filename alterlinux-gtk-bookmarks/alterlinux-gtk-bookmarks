@@ -85,11 +85,18 @@ init() {
 
     source "${HOME}/.config/user-dirs.dirs"
 
-    output "file://${XDG_DOCUMENTS_DIR} Documents"
-    output "file://${XDG_DOWNLOAD_DIR} Downloads"
-    output "file://${XDG_MUSIC_DIR} Music"
-    output "file://${XDG_PICTURES_DIR} Pictures"
-    output "file://${XDG_VIDEOS_DIR} Videos"
+    init_dirs=(
+        "${XDG_DOCUMENTS_DIR}"
+        "${XDG_DOWNLOAD_DIR}"
+        "${XDG_MUSIC_DIR}"
+        "${XDG_PICTURES_DIR}"
+        "${XDG_VIDEOS_DIR}"
+    )
+
+    local dir
+    for dir in "${init_dirs[@]}"; do
+        output "file://${dir} $(basename "${dir}")"
+    done
 }
 
 
