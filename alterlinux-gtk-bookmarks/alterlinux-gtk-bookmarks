@@ -63,7 +63,9 @@ prepare() {
 }
 
 add() {
-    prepare
+    if [[ "${simulation}" = false ]]; then
+        prepare
+    fi
     local dir
     for dir in ${@}; do
         if [[ ! -d "${dir}" ]]; then
@@ -76,9 +78,10 @@ add() {
 }
 
 init() {
-    remove "${HOME}/.config/gtk-3.0/bookmarks"
-
-    prepare
+    if [[ "${simulation}" = false ]]; then
+        remove "${HOME}/.config/gtk-3.0/bookmarks"
+        prepare
+    fi
 
     source "${HOME}/.config/user-dirs.dirs"
 
@@ -156,7 +159,9 @@ case "${1}" in
         exit 0
         ;;
     delete)
-        remove "${HOME}/.config/gtk-3.0/bookmarks"
+        if [[ "${simulation}" = false ]]; then
+            remove "${HOME}/.config/gtk-3.0/bookmarks"
+        fi
         exit 0
         ;;
     init)
