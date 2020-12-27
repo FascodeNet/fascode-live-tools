@@ -84,10 +84,10 @@ get_desktop_dir() {
     if [[ -v XDG_CONFIG_HOME ]]; then
         _user_config_dir="${XDG_CONFIG_HOME}"
     else
-        _use_config_dir="${HOME}/.config"
+        _user_config_dir="${HOME}/.config"
     fi
-    if [[ -f "${_use_config_dir}/user-dirs.dirs" ]]; then
-        source "${_use_config_dir}/user-dirs.dirs"
+    if [[ -f "${_user_config_dir}/user-dirs.dirs" ]]; then
+        source "${_user_config_dir}/user-dirs.dirs"
     fi
     if [[ -v XDG_DESKTOP_DIR ]]; then
         _desktop_dir="${XDG_DESKTOP_DIR}"
