@@ -93,8 +93,8 @@ init() {
 
 # Argument analysis and processing
 options="${@}"
-_opt_short="fht"
-_opt_long="force,help,alterlive,t-mart"
+_opt_short="fhts"
+_opt_long="force,help,alterlive,t-mart,simulation"
 OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
 if [[ ${?} != 0 ]]; then
     exit 1
@@ -108,6 +108,10 @@ unset _opt_long
 
 while true; do
     case ${1} in
+        -s | --simulation)
+            simulation=true
+            shift 1
+            ;;
         -f | --force)
             force=true
             shift 1
