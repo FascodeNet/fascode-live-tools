@@ -11,6 +11,7 @@ set -e
 
 force=false
 alterlive=false
+simulation=false
 
 remove () {
     local _list
@@ -29,18 +30,23 @@ _help() {
     echo "usage ${0} [options] [command]"
     echo
     echo " General options:"
-    echo "    -f | --force     Force overwriting."
-    echo "    -h | --help      This help message and exit."
+    echo "    -f | --force          Force overwriting"
+    echo "    -s | --simulation     Enable sumulation"
+    echo "    -h | --help           This help message and exit"
     echo
     echo " General command:"
-    echo "    add <dir>        Add items to the sidebar."
-    echo "    delete           Delete all sidebar items."
-    echo "    init             Initializes the sidebar."
-    echo "    help             This help message and exit."
+    echo "    add <dir>             Add items to the sidebar"
+    echo "    delete                Delete all sidebar items"
+    echo "    init                  Initializes the sidebar"
+    echo "    help                  This help message and exit"
 }
 
 output() {
-    echo "${@}" >> "${HOME}/.config/gtk-3.0/bookmarks"
+    if [[ "${simulation}" = true ]]; then
+        echo "${@}"
+    else
+        echo "${@}" >> "${HOME}/.config/gtk-3.0/bookmarks"
+    fi
 }
 
 _msg_error() {
