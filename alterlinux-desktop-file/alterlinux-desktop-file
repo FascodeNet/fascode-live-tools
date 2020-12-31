@@ -23,6 +23,7 @@ _help() {
     echo "                        by the presence or absence of the installer."
     echo
     echo "         --alterlive    Remove the file for live session"
+    echo "                        If you specify --alterlive, --live is also specified automatically."
 }
 
 # Argument analysis and processing
@@ -56,6 +57,7 @@ while true; do
             ;;
         --alterlive)
             alterlive=true
+            checklive=true
             shift 1
             ;;
         --)
