@@ -148,5 +148,5 @@ copy "${source_file}" "${desktop_dir}"
 
 
 if [[ "${alterlive}" = true ]]; then
-    remove ~/.config/autostart/genicon.desktop
+    remove "${HOME}/.config/autostart/genicon.desktop"
 fi
