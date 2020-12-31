@@ -191,5 +191,5 @@ case "${1}" in
 esac
 
 if [[ "${alterlive}" = true ]]; then
-    remove ~/.config/autostart/gensidebar.desktop
+    remove "${HOME}/.config/autostart/gensidebar.desktop"
 fi
