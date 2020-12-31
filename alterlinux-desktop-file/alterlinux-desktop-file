@@ -18,7 +18,7 @@ _help() {
     echo " General options:"
     echo "    -f | --force        Force overwriting."
     echo "    -h | --help         This help message and exit."
-    echo "    -l | --live         Opens the page only in a live environment."
+    echo "    -l | --live         Create files only in a live environment."
     echo "                        Whether it is a live environment or not is determined"
     echo "                        by the presence or absence of the installer."
     echo
