@@ -154,5 +154,5 @@ else
 fi
 
 if [[ "${alterlive}" = true ]]; then
-    remove ~/.config/autostart/welcome_page.desktop
+    remove "${HOME}/.config/autostart/welcome_page.desktop"
 fi
