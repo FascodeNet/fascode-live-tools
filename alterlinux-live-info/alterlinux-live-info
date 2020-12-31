@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# Yamada Hayao
+# Twitter: @Hayao0819
+# Email  : hayao@fascode.net
+#
+# (c) 2019-2020 Fascode Network.
+#
+
+set -e
+
+#infofile="/run/archiso/bootmnt/alteriso-info"
+infofile="${HOME}/Desktop/alteriso-info"
+shellmode=false
+
+_help() {
+    echo "usage ${0} [options]"
+    echo
+    echo " General options:"
+    echo "    -f | --file [path]  Specify the file to read"
+    echo "    -s | --shell        Enable shell mode"
+    echo "    -h | --help         This help message and exit."
+}
+
+# Argument analysis and processing
+options="${@}"
+opt_short="hf:s"
+opt_long="help,file:,shell"
+OPT=$(getopt -o ${opt_short} -l ${opt_long} -- "${@}")
+if [[ ${?} != 0 ]]; then
+    exit 1
+fi
+
+eval set -- "${OPT}"
+unset OPT opt_short opt_long
+
+while true; do
+    case "${1}" in
+        -s | --shell)
+            shellmode=true
+            shift 1
+            ;;
+        -f | --file)
+            infofile="${2}"
+            shift 2
+            ;;
+        -h | --help)
+            _help
+            shift 1
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "Invalid argument '${1}'" >&2
+            _help
+            exit 1
+            ;;
+    esac
+done
+
+
+if [[ ! -f "${infofile}" ]]; then
+    echo "${infofile} was not found." >&2
+    exit 1
+fi
+
+
+if [[ "${shellmode}" = false ]]; then
+    cat "${infofile}"
+else
+    # 項目を取得する
+    items=()
+    for _item in $(cat "${infofile}" | cut -d ':' -f 1 | sed 's/ *$//' |sed 's| \+|_|g' | tr '[:upper:]' '[:lower:]'); do
+        items+=("$(echo "${_item}")")
+    done
+    unset _item
+
+    # 値を取得する
+    values=()
+    PREV_IFS="${IFS}"
+    IFS="
+"
+    values=($(cat "${infofile}" | cut -d ':' -f 2- | sed "s|^ ||g" | grep -v ^$))
+    line_number=$(( "$(cat "${infofile}" 2> /dev/null | wc -l)" - 1 ))
+    IFS="${PREV_IFS}"
+
+    for line in $(seq 0 "${line_number}"); do
+        echo "${items[${line}]}=\"${values[${line}]}\""
+    done
+fi
