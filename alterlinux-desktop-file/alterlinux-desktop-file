@@ -70,7 +70,7 @@ while true; do
             ;;
         --alterlive)
             alterlive=true
-            checklive=true
+            #checklive=true
             shift 1
             ;;
         --)
@@ -132,18 +132,20 @@ copy() {
 desktop_dir="$(get_desktop_dir)"
 
 # calamaresのアイコン
-source_file="/usr/share/alterlinux/desktop-file/calamares.desktop"
-desktop_icon="${desktop_dir}/$(basename "${source_file}")"
-copy "${source_file}" "${desktop_dir}"
-os_name="$(
-    if [[ -f "/etc/os-release" ]]; then
-        source "/etc/os-release"
-        echo -n "${NAME}"
-    else
-        echo -n "Alter Linux"
-    fi
-)"
-sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_icon}"
+if pacman -Qq alterlinux-calamares 1> /dev/null 2> /dev/null; then
+    source_file="/usr/share/alterlinux/desktop-file/calamares.desktop"
+    desktop_icon="${desktop_dir}/$(basename "${source_file}")"
+    copy "${source_file}" "${desktop_dir}"
+    os_name="$(
+        if [[ -f "/etc/os-release" ]]; then
+            source "/etc/os-release"
+            echo -n "${NAME}"
+        else
+            echo -n "Alter Linux"
+        fi
+    )"
+    sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_icon}"
+fi
 
 
 # welcome-page
