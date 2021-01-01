@@ -12,6 +12,19 @@ alterlive=false
 force=false
 checklive=false
 
+remove () {
+    local _list
+    local _file
+    _list=($(echo "$@"))
+    for _file in "${_list[@]}"; do
+        if [[ -f ${_file} ]]; then
+            rm -f "${_file}"
+        elif [[ -d ${_file} ]]; then
+            rm -rf "${_file}"
+        fi
+    done
+}
+
 _help() {
     echo "usage ${0} [options]"
     echo
@@ -100,19 +113,6 @@ get_desktop_dir() {
         _desktop_dir="${HOME}/Desktop"
     fi
     echo -n "${_desktop_dir}"
-}
-
-remove () {
-    local _list
-    local _file
-    _list=($(echo "$@"))
-    for _file in "${_list[@]}"; do
-        if [[ -f ${_file} ]]; then
-            rm -f "${_file}"
-        elif [[ -d ${_file} ]]; then
-            rm -rf "${_file}"
-        fi
-    done
 }
 
 #copy <コピー元> <コピー先>
