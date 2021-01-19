@@ -12,6 +12,7 @@ set -e
 force=false
 alterlive=false
 simulation=false
+bookmark_file="${HOME}/.config/gtk-3.0/bookmarks"
 
 remove () {
     local _list
@@ -35,8 +36,9 @@ _help() {
     echo "    -h | --help           This help message and exit"
     echo
     echo " General command:"
-    echo "    add <dir>             Add items to the sidebar"
-    echo "    delete                Delete all sidebar items"
+    echo "    add <dir>             Add a item to the sidebar"
+    echo "    delete <dir>          Delete item from the sidebar"
+    echo "    alldelete             Delete all sidebar items"
     echo "    init                  Initializes the sidebar"
     echo "    help                  This help message and exit"
 }
@@ -45,7 +47,7 @@ output() {
     if [[ "${simulation}" = true ]]; then
         echo "${@}"
     else
-        echo "${@}" >> "${HOME}/.config/gtk-3.0/bookmarks"
+        echo "${@}" >> "${bookmark_file}"
     fi
 }
 
@@ -54,11 +56,11 @@ _msg_error() {
 }
 
 prepare() {
-    if [[ ! -d "${HOME}/.config/gtk-3.0/" ]]; then
-        mkdir -p "${HOME}/.config/gtk-3.0/"
+    if [[ ! -d "$(dirname "${bookmark_file}")" ]]; then
+        mkdir -p "$(dirname "${bookmark_file}")"
     fi
-    if [[ ! -f "${HOME}/.config/gtk-3.0/bookmarks" ]]; then
-        touch "${HOME}/.config/gtk-3.0/bookmarks"
+    if [[ ! -f "${bookmark_file}" ]]; then
+        touch "${bookmark_file}"
     fi
 }
 
@@ -72,14 +74,43 @@ add() {
             _msg_error "${dir} does not exist."
             exit 1
         else
-            output "file://${dir}"
+            output "file://${dir} $(basename "${dir}")"
         fi
+    done
+}
+
+
+delete() {
+    if [[ ! -f "${bookmark_file}" ]]; then
+        _msg_error "Bookmark file does not exist."
+        exit 1
+    fi
+    local _dir _count _line_contain _remove_line=() _url _remove_count
+    for _dir in ${@}; do
+        _url="$(realpath "${_dir}" | sed "s/ /%20/g")"
+        for _count in $(seq 1 $(cat "${bookmark_file}" | wc -l )); do
+            _line_contain="$(cat "${bookmark_file}" | head -n "${_count}" | tail -n 1 | cut -d ' ' -f 1)"
+            _line_contain="${_line_contain#file://}"
+            if [[ "${_url}" = "${_line_contain}" ]] || [[ "${_url}" = "file://${_line_contain}" ]]; then
+                _remove_line+=("${_count}")
+            fi
+        done
+        _remove_count=0
+        for _count in ${_remove_line[@]}; do
+            if [[ "${simulation}" = true ]]; then
+                sed "${_count}d" "${bookmark_file}"
+            else
+                _count="$(( _count - _remove_count ))"
+                sed -i "${_count}d" "${bookmark_file}"
+                _remove_count="$(( _remove_count + 1 ))"
+            fi
+        done
     done
 }
 
 init() {
     if [[ "${simulation}" = false ]]; then
-        remove "${HOME}/.config/gtk-3.0/bookmarks"
+        remove "${bookmark_file}"
         prepare
     fi
 
@@ -165,20 +196,30 @@ case "${1}" in
         fi
         exit 0
         ;;
-    delete)
+    alldelete)
         shift 1
         if [[ "${simulation}" = false ]]; then
-            remove "${HOME}/.config/gtk-3.0/bookmarks"
+            remove "${bookmark_file}"
         fi
         ;;
     init)
         shift 1
-        if [[ -f "${HOME}/.config/gtk-3.0/bookmarks" ]] && [[ "${force}" = false ]] && [[ "${simulation}" = false ]]; then
+        if [[ -f "${bookmark_file}" ]] && [[ "${force}" = false ]] && [[ "${simulation}" = false ]]; then
             _msg_error "The sidebar already exists. Use -f to force initialization."
             exit 1
         else
             init
         fi
+        ;;
+    delete)
+        shift 1
+        if [[ -z "${*}" ]]; then
+            _msg_error "Please specify a directory."
+            exit 1
+        else
+            delete "${@}"
+        fi
+        exit 0
         ;;
     help)
         shift 1
