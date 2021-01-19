@@ -85,8 +85,9 @@ delete() {
         _msg_error "Bookmark file does not exist."
         exit 1
     fi
-    local _dir _count _line_contain _remove_line=() _url _remove_count
-    for _dir in ${@}; do
+    local _dir _count _line_contain _remove_line=() _url _remove_count i=1
+    for (( i = 1; i <= "${#}"; i++)); do
+        _dir="$(eval echo '$'${i})"
         _url="$(realpath "${_dir}" | sed "s/ /%20/g")"
         for _count in $(seq 1 $(cat "${bookmark_file}" | wc -l )); do
             _line_contain="$(cat "${bookmark_file}" | head -n "${_count}" | tail -n 1 | cut -d ' ' -f 1)"
