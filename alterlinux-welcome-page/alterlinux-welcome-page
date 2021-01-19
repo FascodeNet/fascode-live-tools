@@ -16,10 +16,11 @@ custombrowser=false
 nourlmode=false
 
 defaultbrowserlist=(
-    #vivaldi-stable --start-maximized --app=%s"
-    #"brave --start-maximized --app=%s"
+    "microsoft-edge-dev --start-maximized --app=%s"
+    "vivaldi-stable --start-maximized --app=%s"
+    "brave --start-maximized --app=%s"
     "firefox-developer-edition -url %s & xdotool search --sync --onlyvisible --class 'Firefox' windowactivate key F11"
-    #"firefox -url %s & xdotool search --sync --onlyvisible --class 'Firefox' windowactivate key F11"
+    "firefox -url %s & xdotool search --sync --onlyvisible --class 'Firefox' windowactivate key F11"
     "chromium --start-maximized --app=%s"
     "google-chrome  --start-maximized --app=%s"
 )
