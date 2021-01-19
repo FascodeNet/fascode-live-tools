@@ -41,20 +41,20 @@ _help() {
 
 # Argument analysis and processing
 options="${@}"
-_opt_short="fhl"
-_opt_long="force,live,help,alterlive"
-OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
-if [[ ${?} != 0 ]]; then
+opt_short="fhl"
+opt_long="force,live,help,alterlive"
+OPT="$(getopt -o ${opt_short} -l ${opt_long} -- "${@}")"
+if (( "${?}" != 0 )); then
     exit 1
 fi
 
 eval set -- "${OPT}"
 unset OPT
-unset _opt_short
-unset _opt_long
+unset opt_short
+unset opt_long
 
 while true; do
-    case ${1} in
+    case "${1}" in
         -f | --force)
             force=true
             shift 1
