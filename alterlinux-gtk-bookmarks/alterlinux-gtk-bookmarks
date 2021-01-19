@@ -97,6 +97,10 @@ delete() {
             fi
         done
         _remove_count=0
+        if (( "${#_remove_line[@]}" == 0 )); then
+            _msg_error "${_dir} is not registered in the sidebar."
+            continue
+        fi
         for _count in ${_remove_line[@]}; do
             if [[ "${simulation}" = true ]]; then
                 sed "${_count}d" "${bookmark_file}"
