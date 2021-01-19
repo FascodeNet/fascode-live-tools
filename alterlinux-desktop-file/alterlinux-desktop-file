@@ -145,6 +145,10 @@ if pacman -Qq alterlinux-calamares 1> /dev/null 2> /dev/null; then
         fi
     )"
     sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_icon}"
+
+    # Set permission for gnome desktop
+    # https://gitlab.com/rastersoft/desktop-icons-ng/-/issues/111
+    gio set "${desktop_icon}" metadata::trusted true
 fi
 
 
@@ -152,3 +156,4 @@ fi
 source_file="/usr/share/alterlinux/desktop-file/welcome-to-alter.desktop"
 desktop_icon="${desktop_dir}/$(basename "${source_file}")"
 copy "${source_file}" "${desktop_dir}"
+gio set "${desktop_icon}" metadata::trusted true
