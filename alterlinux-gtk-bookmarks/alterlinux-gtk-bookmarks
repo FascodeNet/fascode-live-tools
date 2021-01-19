@@ -87,8 +87,10 @@ delete() {
     fi
     local _dir _count _line_contain _remove_line=() _url _remove_count i=1
     for (( i = 1; i <= "${#}"; i++)); do
+        cd "${PWD}"
         _dir="$(eval echo '$'${i})"
         _url="$(realpath "${_dir}" | sed "s/ /%20/g")"
+        cd "${OLDPWD}"
         for _count in $(seq 1 $(cat "${bookmark_file}" | wc -l )); do
             _line_contain="$(cat "${bookmark_file}" | head -n "${_count}" | tail -n 1 | cut -d ' ' -f 1)"
             _line_contain="${_line_contain#file://}"
