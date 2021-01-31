@@ -10,7 +10,7 @@
 set -e
 
 force=false
-alterlive=false
+fascodelive=false
 simulation=false
 bookmark_file="${HOME}/.config/gtk-3.0/bookmarks"
 
@@ -32,7 +32,7 @@ _help() {
     echo
     echo " General options:"
     echo "    -f | --force          Force overwriting"
-    echo "    -s | --simulation     Enable sumulation"
+    echo "    -s | --simulation     Enable simulation"
     echo "    -h | --help           This help message and exit"
     echo
     echo " General command:"
@@ -142,7 +142,7 @@ init() {
 # Argument analysis and processing
 options="${@}"
 _opt_short="fhts"
-_opt_long="force,help,alterlive,t-mart,simulation"
+_opt_long="force,help,fascodelive,t-mart,takebayashi,simulation"
 OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
 if [[ ${?} != 0 ]]; then
     exit 1
@@ -169,15 +169,32 @@ while true; do
             shift 1
             exit 0
             ;;
-        --alterlive)
-            alterlive=true
+        --fascodelive)
+            fascodelive=true
             shift 1
             ;;
-        -t | --t-mart)
+         --t-mart)
+            
             echo "さすが店長、青春ブタ野郎だね"
             shift 1
             exit 0
             ;;
+         --takebayashi)
+            
+            echo "チノちゃんかわいい最高!!"
+            shift 1
+            exit 0
+            ;;
+         -t)
+            if [[ "$(basename $0)" == "alterlinux-gtk-bookmarks" ]]; then
+                echo "さすが店長、青春ブタ野郎だね"
+            else
+                echo "チノちゃんかわいい最高!!"
+            fi
+            shift 1
+            exit 0
+            ;;
+
         --)
             shift
             break
@@ -238,6 +255,6 @@ case "${1}" in
         ;;
 esac
 
-if [[ "${alterlive}" = true ]]; then
+if [[ "${fascodelive}" = true ]]; then
     remove "${HOME}/.config/autostart/gensidebar.desktop"
 fi
