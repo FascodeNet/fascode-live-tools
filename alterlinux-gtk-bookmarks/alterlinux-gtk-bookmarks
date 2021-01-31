@@ -32,7 +32,7 @@ _help() {
     echo
     echo " General options:"
     echo "    -f | --force          Force overwriting"
-    echo "    -s | --simulation     Enable sumulation"
+    echo "    -s | --simulation     Enable simulation"
     echo "    -h | --help           This help message and exit"
     echo
     echo " General command:"
