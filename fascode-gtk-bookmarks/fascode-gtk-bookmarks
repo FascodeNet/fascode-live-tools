@@ -185,7 +185,7 @@ while true; do
             ;;
          --takebayashi)
             
-            echo "チノちゃんかわいい最高!!"
+            echo "竹林さん。チノちゃんかわいい最高!!"
             shift 1
             exit 0
             ;;
@@ -193,7 +193,7 @@ while true; do
             if [[ "$(basename $0)" == "alterlinux-gtk-bookmarks" ]]; then
                 echo "さすが店長、青春ブタ野郎だね"
             else
-                echo "チノちゃんかわいい最高!!"
+                echo "竹林さん。チノちゃんかわいい最高!!"
             fi
             shift 1
             exit 0
