@@ -8,8 +8,7 @@
 
 set -eu
 
-#infofile="/run/archiso/bootmnt/alteriso-info"
-infofile="${HOME}/Desktop/alteriso-info"
+infofile="/run/archiso/bootmnt/alteriso-info"
 shellmode=false
 only=""
 
