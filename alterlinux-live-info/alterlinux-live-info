@@ -22,11 +22,10 @@ _help() {
 }
 
 # Argument analysis and processing
-options="${@}"
-opt_short="hf:s"
-opt_long="help,file:,shell"
-OPT=$(getopt -o ${opt_short} -l ${opt_long} -- "${@}")
-if [[ ${?} != 0 ]]; then
+ARGUMENT=("${@}")
+OPTS=("h" "f:" "s")
+OPTL=("help" "file:" "shell")
+if ! OPT=$(getopt -o "$(printf "%s," "${OPTS[@]}")" -l "$(printf "%s," "${OPTL[@]}")" -- "${ARGUMENT[@]}"); then
     exit 1
 fi
 
