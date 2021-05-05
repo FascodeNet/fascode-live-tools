@@ -18,17 +18,10 @@ fascodelive=false
 simulation=false
 bookmark_file="${HOME}/.config/gtk-3.0/bookmarks"
 
-remove () {
-    local _list
-    local _file
-    _list=($(echo "$@"))
-    for _file in "${_list[@]}"; do
-        if [[ -f ${_file} ]]; then
-            rm -f "${_file}"
-        elif [[ -d ${_file} ]]; then
-            rm -rf "${_file}"
-        fi
-    done
+# Show message when file is removed
+# remove <file> <file> ...
+remove() {
+    rm -rf "${@}"
 }
 
 _help() {
