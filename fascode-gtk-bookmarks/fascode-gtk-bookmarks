@@ -151,11 +151,10 @@ init() {
 
 
 # Argument analysis and processing
-options="${@}"
-_opt_short="fhts"
-_opt_long="force,help,fascodelive,t-mart,takebayashi,simulation"
-OPT=$(getopt -o ${_opt_short} -l ${_opt_long} -- "${@}")
-if [[ ${?} != 0 ]]; then
+ARGUMENT=("${@}")
+OPTS=("f" "h" "s")
+OPTL="force,help,fascodelive,t-mart,takebayashi,simulation,alterlive"
+if ! OPT=$(getopt -o "$(printf "%s," "${OPTS[@]}")" -l "$(printf "%s," "${OPTL[@]}")" -- "${ARGUMENT[@]}"); then
     exit 1
 fi
 
@@ -180,18 +179,16 @@ while true; do
             shift 1
             exit 0
             ;;
-        --fascodelive)
+        --fascodelive | --alterlive)
             fascodelive=true
             shift 1
             ;;
          --t-mart)
-            
             echo "さすが店長、青春ブタ野郎だね"
             shift 1
             exit 0
             ;;
          --takebayashi)
-            
             echo "竹林さん。チノちゃんかわいい最高!!"
             shift 1
             exit 0
@@ -205,7 +202,6 @@ while true; do
             shift 1
             exit 0
             ;;
-
         --)
             shift
             break
