@@ -11,9 +11,10 @@ set -eu
 #infofile="/run/archiso/bootmnt/alteriso-info"
 infofile="${HOME}/Desktop/alteriso-info"
 shellmode=false
+only=""
 
 _help() {
-    echo "usage ${0} [options]"
+    echo "usage ${0} [options] [value]"
     echo
     echo " General options:"
     echo "    -f | --file [path]  Specify the file to read"
@@ -59,6 +60,11 @@ while true; do
     esac
 done
 
+if [[ -n "${1+SET}" ]]; then
+    only="${1}"
+    shellmode=true
+    shift 1
+fi
 
 if [[ ! -f "${infofile}" ]]; then
     echo "${infofile} was not found." >&2
@@ -85,6 +91,11 @@ else
     IFS="${PREV_IFS}"
 
     for line in $(seq 0 "${line_number}"); do
-        echo "${items[${line}]}=\"${values[${line}]}\""
+        if [[ -z "${only}" ]]; then
+            echo "${items[${line}]}=\"${values[${line}]}\""
+        elif [[ "${only}" = "${items[${line}]}" ]]; then
+            echo "${values[${line}]}"
+            break
+        fi
     done
 fi
