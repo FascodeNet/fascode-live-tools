@@ -17,6 +17,7 @@ force=false
 fascodelive=false
 simulation=false
 bookmark_file="${HOME}/.config/gtk-3.0/bookmarks"
+backup_dir="${bookmark_file}.d/"
 
 # Show message when file is removed
 # remove <file> <file> ...
@@ -37,7 +38,73 @@ _help() {
     echo "    delete <dir>          Delete item from the sidebar"
     echo "    alldelete             Delete all sidebar items"
     echo "    init                  Initializes the sidebar"
+    echo "    backup                Backup sidebar"
+    echo "    restore               Restore bookmark from backup"
     echo "    help                  This help message and exit"
+}
+
+# 質問を行う関数
+# Returns only the selected result to standard output
+# _ask -d <デフォルト値> -p <質問文> <選択肢1> <選択肢2> ...
+_ask(){
+    local arg OPTARG OPTIND _default="" _choice_list _count _choice _question
+    while getopts "d:p:" arg; do
+        case "${arg}" in
+            d) _default="${OPTARG}" ;;
+            p) _question="${OPTARG}" ;;
+            *) exit 1 ;;
+        esac
+    done
+    shift "$((OPTIND - 1))"
+    _choice_list=("${@}")
+    _digit="${##}"
+
+    # 選択肢に関するエラー
+    if (( ${#_choice_list[@]} < 0 )); then
+        _msg_error "An exception error has occurred."
+        exit 1
+    fi
+
+    # 選択肢が1つしか無いならばそのまま値を返す
+    if (( ${#_choice_list[@]} <= 1 )); then
+        echo "${_choice_list[*]}"
+        return 0
+    fi
+
+    if [[ -v _question ]] && [[ ! "${_question}" = "" ]]; then
+        echo -e "${_question}" >&2
+    fi
+
+    for (( _count=1; _count<=${#_choice_list[@]}; _count++)); do
+        _choice="${_choice_list[$(( _count - 1 ))]}"
+        if [[ ! "${_default}" = "" ]] && [[ "${_choice}" = "${_default}" ]]; then
+            printf " * %${_digit}d: ${_choice}\n" "${_count}" >&2
+        else
+            printf "   %${_digit}d: ${_choice}\n" "${_count}" >&2
+        fi
+        unset _choice
+    done
+    echo -n "(1 ~ ${#_choice_list[@]}) > " >&2
+    read -r _input
+
+    # 回答を解析
+    if printf "%s" "${_input}" | grep -E "^[0-9]+$" 1>/dev/null 2>&1; then
+        # 数字が入力された
+        if (( 1 <= _input)) && (( _input <= ${#_choice_list[@]} )); then
+            _choice="${_choice_list[$(( _input - 1 ))]}"
+        else
+            return 1
+        fi
+    else
+        # 文字が入力された
+        if printf "%s\n" "${_choice_list[@]}" | grep -x "${_input}" 1>/dev/null 2>&1; then
+            _choice="${_input}"
+        else
+            return 1
+        fi
+    fi
+    echo "${_choice}"
+    return 0
 }
 
 output() {
@@ -114,7 +181,7 @@ delete() {
             _msg_error "${_dir} is not registered in the sidebar."
             continue
         fi
-        for _count in ${_remove_line[@]}; do
+        for _count in "${_remove_line[@]}"; do
             if [[ "${simulation}" = true ]]; then
                 sed "${_count}d" "${bookmark_file}"
             else
@@ -148,7 +215,43 @@ init() {
     done
 }
 
+backup(){
+    if [[ ! -f "${bookmark_file}" ]]; then
+        echo "Initialize with the init command or add the directory with the add command."
+        exit 1
+    fi
+    mkdir -p "${backup_dir}"
+    local path="${backup_dir}/$(date +%s).bak"
+    cp "${bookmark_file}" "${path}"
+    echo "Backuped to ${path}"
+}
 
+restore(){
+    local backups=() target_date target_path
+    readarray -t backups < <(find "${backup_dir}" -mindepth 1 -maxdepth 1  -name "*.bak" -type f -printf "%f\0" | xargs -0 -I{} bash -c 'echo {} | sed "s|.bak$||g"' | xargs -I{} date --date "@{}" "+%Y/%m/%d %T")
+    if (( "${#backups[@]}" == 0 )); then
+        _msg_error "Backup was not found"
+        exit 1
+    fi
+    if ! target_date=$(_ask -p "Select the backup you want to use" "${backups[@]}"); then
+        exit 1
+    else
+        target_path="${backup_dir}/$(date -d "${target_date}" +%s).bak"
+        if [[ -f "${target_path}" ]]; then
+            if [[ -f "${bookmark_file}" ]] && [[ "${force}" = false ]] && [[ "${simulation}" = false ]] && [[ -n "$(cat "${bookmark_file}" 2>/dev/null)" ]]; then
+                _msg_error "The sidebar already exists. Use -f to force initialization."
+                exit 1
+            else
+                remove "${bookmark_file}"
+                cp "${target_path}" "${bookmark_file}"
+            fi
+        else
+            _msg_error "A backup that does not exist was selected."
+            exit 1
+        fi
+    fi
+
+}
 
 # Argument analysis and processing
 ARGUMENT=("${@}")
@@ -159,13 +262,11 @@ if ! OPT=$(getopt -o "$(printf "%s," "${OPTS[@]}")" -l "$(printf "%s," "${OPTL[@
 fi
 
 eval set -- "${OPT}"
-unset OPT
-unset _opt_short
-unset _opt_long
+unset ARGUMENT OPTS OPTL OPT
 
 
 while true; do
-    case ${1} in
+    case "${1}" in
         -s | --simulation)
             simulation=true
             shift 1
@@ -216,7 +317,7 @@ done
 
 mode="${1}"
 
-case "${1}" in
+case "${mode}" in
     add) 
         shift 1
         if [[ -z "${*}" ]]; then
@@ -251,6 +352,14 @@ case "${1}" in
             delete "${@}"
         fi
         exit 0
+        ;;
+    backup)
+        shift 1
+        backup
+        ;;
+    restore)
+        shift 1
+        restore
         ;;
     help)
         shift 1
