@@ -30,7 +30,7 @@ if ! OPT=$(getopt -o "$(printf "%s," "${OPTS[@]}")" -l "$(printf "%s," "${OPTL[@
 fi
 
 eval set -- "${OPT}"
-unset OPT opt_short opt_long
+unset ARGUMENT OPTS OPTL OPT
 
 while true; do
     case "${1}" in
