@@ -32,10 +32,11 @@ _help() {
     echo "    -f | --force          Force overwriting"
     echo "    -s | --simulation     Enable simulation"
     echo "    -h | --help           This help message and exit"
+    echo "         --bakdir [dir]   Specify the directory used for backup and restore"
     echo
     echo " General command:"
-    echo "    add <dir>             Add a item to the sidebar"
-    echo "    delete <dir>          Delete item from the sidebar"
+    echo "    add <dir> <name> ...  Add a item to the sidebar"
+    echo "    delete <dir> ...      Delete item from the sidebar"
     echo "    alldelete             Delete all sidebar items"
     echo "    init                  Initializes the sidebar"
     echo "    backup                Backup sidebar"
@@ -256,7 +257,7 @@ restore(){
 # Argument analysis and processing
 ARGUMENT=("${@}")
 OPTS=("f" "h" "s")
-OPTL="force,help,fascodelive,t-mart,takebayashi,simulation,alterlive"
+OPTL="force,help,fascodelive,t-mart,takebayashi,simulation,alterlive,bakdir:"
 if ! OPT=$(getopt -o "$(printf "%s," "${OPTS[@]}")" -l "$(printf "%s," "${OPTL[@]}")" -- "${ARGUMENT[@]}"); then
     exit 1
 fi
@@ -284,17 +285,17 @@ while true; do
             fascodelive=true
             shift 1
             ;;
-         --t-mart)
+        --t-mart)
             echo "さすが店長、青春ブタ野郎だね"
             shift 1
             exit 0
             ;;
-         --takebayashi)
+        --takebayashi)
             echo "竹林さん。チノちゃんかわいい最高!!"
             shift 1
             exit 0
             ;;
-         -t)
+        -t)
             if [[ "$(basename $0)" == "alterlinux-gtk-bookmarks" ]]; then
                 echo "さすが店長、青春ブタ野郎だね"
             else
@@ -302,6 +303,10 @@ while true; do
             fi
             shift 1
             exit 0
+            ;;
+        --bakdir)
+            backup_dir="${2}"
+            shift 2
             ;;
         --)
             shift
