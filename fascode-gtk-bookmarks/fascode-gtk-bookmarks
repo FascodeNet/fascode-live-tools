@@ -62,17 +62,31 @@ prepare() {
 }
 
 add() {
+
     if [[ "${simulation}" = false ]]; then
         prepare
     fi
-    local dir
-    for dir in ${@}; do
-        if [[ ! -d "${dir}" ]]; then
+    local name dir
+    while true; do
+        if [[ -z "${1+SET}" ]]; then
+            return 0
+        fi
+        if [[ -d "${1}" ]]; then
+            dir="${1}"
+            shift 1
+            if [[ -n "${1+SET}" ]] && [[ ! -d "${1}" ]]; then
+                name="${1}"
+                shift 1
+            else
+                name="$(basename "${dir}")"
+            fi
+        else
             _msg_error "${dir} does not exist."
             exit 1
-        else
-            output "file://${dir} $(basename "${dir}")"
         fi
+        echo "Added bookmark ${dir} as ${name}"
+        output "file://${dir} ${name}"
+
     done
 }
 
