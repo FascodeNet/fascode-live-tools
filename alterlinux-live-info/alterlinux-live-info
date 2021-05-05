@@ -80,8 +80,7 @@ else
     # 値を取得する
     values=()
     PREV_IFS="${IFS}"
-    IFS="
-"
+    IFS=$'\n'
     values=($(cat "${infofile}" | cut -d ':' -f 2- | sed "s|^ ||g" | grep -v ^$))
     line_number=$(( "$(cat "${infofile}" 2> /dev/null | wc -l)" - 1 ))
     IFS="${PREV_IFS}"
