@@ -257,7 +257,7 @@ restore(){
 # Argument analysis and processing
 ARGUMENT=("${@}")
 OPTS=("f" "h" "s")
-OPTL="force,help,fascodelive,t-mart,takebayashi,simulation,alterlive,bakdir:"
+OPTL=("force" "help" "fascodelive" "t-mart" "takebayashi" "simulation" "alterlive" "bakdir:")
 if ! OPT=$(getopt -o "$(printf "%s," "${OPTS[@]}")" -l "$(printf "%s," "${OPTL[@]}")" -- "${ARGUMENT[@]}"); then
     exit 1
 fi
