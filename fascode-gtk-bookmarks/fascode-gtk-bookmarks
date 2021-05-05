@@ -105,7 +105,7 @@ delete() {
         for _count in $(seq 1 $(cat "${bookmark_file}" | wc -l )); do
             _line_contain="$(cat "${bookmark_file}" | head -n "${_count}" | tail -n 1 | cut -d ' ' -f 1)"
             _line_contain="${_line_contain#file://}"
-            if [[ "${_url}" = "${_line_contain}" ]] || [[ "${_url}" = "file://${_line_contain}" ]]; then
+            if [[ "${_url}" = "${_line_contain}" ]] || [[ "${_url}" = "file://${_line_contain}" ]] || [[ "${_url}/" = "${_line_contain}" ]] || [[ "${_url}/" = "file://${_line_contain}" ]]; then
                 _remove_line+=("${_count}")
             fi
         done
