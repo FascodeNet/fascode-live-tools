@@ -17,16 +17,7 @@ force=false
 checklive=false
 
 remove () {
-    local _list
-    local _file
-    _list=($(echo "$@"))
-    for _file in "${_list[@]}"; do
-        if [[ -f ${_file} ]]; then
-            rm -f "${_file}"
-        elif [[ -d ${_file} ]]; then
-            rm -rf "${_file}"
-        fi
-    done
+    rm -rf "${@}"
 }
 
 _help() {
@@ -135,6 +126,15 @@ copy() {
 
 desktop_dir="$(get_desktop_dir)"
 
+# set_permission <file>
+set_permission(){
+    chmod 755 "${1}"
+
+    # Set permission for gnome desktop
+    # https://gitlab.com/rastersoft/desktop-icons-ng/-/issues/111
+    gio set "${1}" metadata::trusted true
+}
+
 # calamaresのアイコン
 if pacman -Qq alterlinux-calamares 1> /dev/null 2> /dev/null; then
     source_file="/usr/share/alterlinux/desktop-file/calamares.desktop"
@@ -150,9 +150,7 @@ if pacman -Qq alterlinux-calamares 1> /dev/null 2> /dev/null; then
     )"
     sed -i "s/%OS_NAME%/${os_name}/g" "${desktop_icon}"
 
-    # Set permission for gnome desktop
-    # https://gitlab.com/rastersoft/desktop-icons-ng/-/issues/111
-    gio set "${desktop_icon}" metadata::trusted true
+    set_permission "${desktop_icon}"
 fi
 
 
@@ -160,4 +158,4 @@ fi
 source_file="/usr/share/alterlinux/desktop-file/welcome-to-alter.desktop"
 desktop_icon="${desktop_dir}/$(basename "${source_file}")"
 copy "${source_file}" "${desktop_dir}"
-gio set "${desktop_icon}" metadata::trusted true
+set_permission "${desktop_icon}"
