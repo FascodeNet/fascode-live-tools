@@ -135,8 +135,16 @@ set_permission(){
     gio set "${1}" metadata::trusted true
 }
 
+# ライブ環境から実行されているかチェックします
+check_livecd(){
+    if [[ -d "/run/archiso" ]] || grep "^archisobasedir=" "/proc/cmdline" 2> /dev/null 1>&2; then
+        return 0
+    fi
+    return 1
+}
+
 # calamaresのアイコン
-if pacman -Qq alterlinux-calamares 1> /dev/null 2> /dev/null; then
+if check_livecd; then
     source_file="/usr/share/alterlinux/desktop-file/calamares.desktop"
     desktop_icon="${desktop_dir}/$(basename "${source_file}")"
     copy "${source_file}" "${desktop_dir}"

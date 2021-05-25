@@ -123,10 +123,16 @@ while true; do
     esac
 done
 
-if [[ "${checklive}" = true ]]; then
-    if [[ -n $(pacman -Q alterlinux-calamares) ]]; then
-        exit 0
+# ライブ環境から実行されているかチェックします
+check_livecd(){
+    if [[ -d "/run/archiso" ]] || grep "^archisobasedir=" "/proc/cmdline" 2> /dev/null 1>&2; then
+        return 0
     fi
+    return 1
+}
+
+if [[ "${checklive}" = true ]] && check_livecd; then
+    exit 0
 fi
 
 # ブラウザが指定されていないなら一覧から自動で検出する
