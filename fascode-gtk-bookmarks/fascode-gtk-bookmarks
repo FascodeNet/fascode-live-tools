@@ -234,18 +234,17 @@ restore(){
         _msg_error "Backup was not found"
         exit 1
     fi
+    if [[ -f "${bookmark_file}" ]] && [[ "${force}" = false ]] && [[ "${simulation}" = false ]] && [[ -n "$(cat "${bookmark_file}" 2>/dev/null)" ]]; then
+        _msg_error "The sidebar already exists. Use -f to force restore."
+        exit 1
+    fi
     if ! target_date=$(_ask -p "Select the backup you want to use" "${backups[@]}"); then
         exit 1
     else
         target_path="${backup_dir}/$(date -d "${target_date}" +%s).bak"
         if [[ -f "${target_path}" ]]; then
-            if [[ -f "${bookmark_file}" ]] && [[ "${force}" = false ]] && [[ "${simulation}" = false ]] && [[ -n "$(cat "${bookmark_file}" 2>/dev/null)" ]]; then
-                _msg_error "The sidebar already exists. Use -f to force initialization."
-                exit 1
-            else
-                remove "${bookmark_file}"
-                cp "${target_path}" "${bookmark_file}"
-            fi
+            remove "${bookmark_file}"
+            cp "${target_path}" "${bookmark_file}"
         else
             _msg_error "A backup that does not exist was selected."
             exit 1
