@@ -1,6 +1,0 @@
-language: shell
-script:
-  - bash -c './shellcheck.sh'
-
-git:
-  submodules: false
