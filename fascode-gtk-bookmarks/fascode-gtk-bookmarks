@@ -164,19 +164,37 @@ delete() {
         _msg_error "Bookmark file does not exist."
         exit 1
     fi
-    local _dir _count _line_contain _remove_line=() _url _remove_count i=1
+    local _dir _count _line_contain _remove_line=() _url _remove_count i=1 _name
     for (( i = 1; i <= "${#}"; i++)); do
         cd "${PWD}"
         _dir="$(eval echo '$'${i})"
         _url="$(realpath "${_dir}" | sed "s/ /%20/g")"
         cd "${OLDPWD}"
-        for _count in $(seq 1 $(cat "${bookmark_file}" | wc -l )); do
+
+        # Check file path
+        for _count in $(seq 1 "$(cat "${bookmark_file}" | wc -l )"); do
             _line_contain="$(cat "${bookmark_file}" | head -n "${_count}" | tail -n 1 | cut -d ' ' -f 1)"
             _line_contain="${_line_contain#file://}"
             if [[ "${_url}" = "${_line_contain}" ]] || [[ "${_url}" = "file://${_line_contain}" ]] || [[ "${_url}/" = "${_line_contain}" ]] || [[ "${_url}/" = "file://${_line_contain}" ]]; then
                 _remove_line+=("${_count}")
             fi
         done
+
+        # Check name
+        _name="$(eval echo '$'${i})"
+        for _count in $(seq 1 "$(cat "${bookmark_file}" | wc -l )"); do
+            _line_contain="$(cat "${bookmark_file}" | head -n "${_count}" | tail -n 1)"
+            if (( "$(echo "${_line_contain}" | awk '{print NF}')" == 1 )); then
+                _line_contain="$(basename "${_line_contain#file://}")"
+            else
+                _line_contain="$(echo "${_line_contain}" | rev | cut -d ' ' -f 1 | rev)"
+            fi
+            if [[ "${_name}" = "${_line_contain}" ]]; then
+                _remove_line+=("${_count}")
+            fi
+        done
+
+        # Run delete
         _remove_count=0
         if (( "${#_remove_line[@]}" == 0 )); then
             _msg_error "${_dir} is not registered in the sidebar."
