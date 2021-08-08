@@ -141,7 +141,7 @@ add() {
             return 0
         fi
         if [[ -d "${1}" ]]; then
-            dir="${1}"
+            dir="$(realpath "${1}" || exit 1)"
             shift 1
             if [[ -n "${1+SET}" ]] && [[ ! -d "${1}" ]]; then
                 name="${1}"
