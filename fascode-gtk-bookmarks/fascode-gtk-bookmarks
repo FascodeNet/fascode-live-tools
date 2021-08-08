@@ -41,6 +41,7 @@ _help() {
     echo "    init                  Initializes the sidebar"
     echo "    backup                Backup sidebar"
     echo "    restore               Restore bookmark from backup"
+    echo "    edit                  Edit bookmark file (with EDITOR variable)"
     echo "    help                  This help message and exit"
 }
 
@@ -271,6 +272,11 @@ restore(){
 
 }
 
+edit(){
+    local _editor="${EDITOR-"vi"}"
+    eval "${_editor}" "${bookmark_file}"
+}
+
 # Argument analysis and processing
 ARGUMENT=("${@}")
 OPTS=("f" "h" "s")
@@ -382,6 +388,10 @@ case "${mode}" in
     restore)
         shift 1
         restore
+        ;;
+    edit)
+        shift 1
+        edit
         ;;
     help)
         shift 1
