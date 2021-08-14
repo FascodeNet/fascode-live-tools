@@ -77,7 +77,7 @@ else
     # 項目を取得する
     items=()
     for _item in $(cut -d ':' -f 1 < "${infofile}" | sed "s|^ *||g; s| *$||g" |sed 's| \+|_|g' | tr '[:upper:]' '[:lower:]'); do
-        items+=("$(echo "${_item}")")
+        items+=("${_item}")
     done
     unset _item
 
