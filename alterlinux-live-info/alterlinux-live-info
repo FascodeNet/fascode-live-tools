@@ -76,7 +76,7 @@ if [[ "${shellmode}" = false ]]; then
 else
     # 項目を取得する
     items=()
-    for _item in $(cat "${infofile}" | cut -d ':' -f 1 | sed "s|^ *||g; s| *$||g" |sed 's| \+|_|g' | tr '[:upper:]' '[:lower:]'); do
+    for _item in $(cut -d ':' -f 1 < "${infofile}" | sed "s|^ *||g; s| *$||g" |sed 's| \+|_|g' | tr '[:upper:]' '[:lower:]'); do
         items+=("$(echo "${_item}")")
     done
     unset _item
@@ -85,8 +85,8 @@ else
     values=()
     PREV_IFS="${IFS}"
     IFS=$'\n'
-    readarray -t values < <(cat "${infofile}" | cut -d ':' -f 2- | sed "s|^ *||g; s| *$||g" | grep -v ^$ )
-    line_number=$(( "$(cat "${infofile}" 2> /dev/null | wc -l)" - 1 ))
+    readarray -t values < <(cut -d ':' -f 2- < "${infofile}" | sed "s|^ *||g; s| *$||g" | grep -v ^$ )
+    line_number=$(( "$(wc -l < "${infofile}")" - 1 ))
     IFS="${PREV_IFS}"
 
     for line in $(seq 0 "${line_number}"); do
