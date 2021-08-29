@@ -20,5 +20,5 @@ AlterISO3によってビルドされたISOファイルにある`alteriso-info`�
 `alterlinux-gtk-bookmarks`のPlasma版です。
 
 ### alterlinux-welcome-page
-初回起動時に適切なブラウザを検出して[このページ](https://fascode.net/projects/linux/alter/alter-welcome.php)を開きます。  
+初回起動時に適切なブラウザを検出して[このページ](https://alter.fascode.net/alter-welcome.php)を開きます。  
 `.config/autostart/welcome_page.desktop`から呼び出されます。  
